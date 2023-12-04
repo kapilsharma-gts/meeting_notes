@@ -1,4 +1,4 @@
-package com.example.cmp
+package com.example.meetingnotes
 
 import io.flutter.embedding.android.FlutterActivity
 

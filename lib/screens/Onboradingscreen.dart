@@ -20,114 +20,94 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          CustomPaint(
-            painter: ArcPainter(),
-            child: SizedBox(
-              height: screenSize.height / 1.4,
-              width: screenSize.width,
-            ),
-          ),
-          Positioned(
-            top: 130,
-            right: 5,
-            left: 5,
-            child: Lottie.asset(
-              tabs[_currentIndex].lottieFile,
-              key: Key('${Random().nextInt(999999999)}'),
-              width: 600,
-              alignment: Alignment.topCenter,
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SizedBox(
-              height: 270,
-              child: Column(
-                children: [
-                  Flexible(
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: tabs.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        OnboardingModel tab = tabs[index];
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              tab.title,
-                              style: const TextStyle(
-                                fontSize: 25.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 50),
-                            Text(
-                              tab.subtitle,
-                              style: const TextStyle(
-                                fontSize: 15.0,
-                                color: Colors.white70,
-                              ),
-                              textAlign: TextAlign.center,
-                            )
-                          ],
-                        );
-                      },
-                      onPageChanged: (value) {
-                        _currentIndex = value;
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (int index = 0; index < tabs.length; index++)
-                        _DotIndicator(isSelected: index == _currentIndex),
-                    ],
-                  ),
-                  const SizedBox(height: 75)
-                ],
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            CustomPaint(
+              painter: ArcPainter(),
+              child: SizedBox(
+                height: screenSize.height / 1.4,
+                width: screenSize.width,
               ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            textStyle: TextStyle(fontSize: 12),
-            primary: Colors.transparent,
-            onPrimary: Colors.white,
-          ),
+            Positioned(
+              top: 130,
+              right: 5,
+              left: 5,
+              child: Lottie.asset(
+                tabs[_currentIndex].lottieFile,
+                key: Key('${Random().nextInt(999999999)}'),
+                width: 600,
+                alignment: Alignment.topCenter,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                height: 270,
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: tabs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          OnboardingModel tab = tabs[index];
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                tab.title,
+                                style: const TextStyle(
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 50),
+                              Text(
+                                tab.subtitle,
+                                style: const TextStyle(
+                                  fontSize: 15.0,
+                                  color: Colors.white70,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            ],
+                          );
+                        },
+                        onPageChanged: (value) {
+                          _currentIndex = value;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (int index = 0; index < tabs.length; index++)
+                          _DotIndicator(isSelected: index == _currentIndex),
+                      ],
+                    ),
+                    const SizedBox(height: 75)
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (context) => splashgif(),
+              builder: (context) => const Splashgif(),
             ),
             (route) => false,
           ),
-
-          // if (_currentIndex == 2) {
-          //   _pageController.animateToPage(
-          //     0,
-          //     duration: const Duration(milliseconds: 300),
-          //     curve: Curves.linear,
-          //   );
-          // } else {
-          //   _pageController.nextPage(
-          //     duration: const Duration(milliseconds: 300),
-          //     curve: Curves.linear,
-          //   );
-          // }
-
-          child: Text("Skip"),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
-    );
+          backgroundColor: CupertinoColors.extraLightBackgroundGray,
+          child: const Text(
+            "Skip",
+            style: TextStyle(fontSize: 13, color: Colors.black),
+          ),
+        ));
   }
 }
 
@@ -137,8 +117,7 @@ class ArcPainter extends CustomPainter {
     Path lightblueArc = Path()
       ..moveTo(0, 0)
       ..lineTo(0, size.height - 170)
-      ..quadraticBezierTo(
-          size.width / 2, size.height, size.width, size.height - 170)
+      ..quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 170)
       ..lineTo(size.width, size.height)
       ..lineTo(size.width, 0)
       ..close();
@@ -148,8 +127,7 @@ class ArcPainter extends CustomPainter {
     Path whiteArc = Path()
       ..moveTo(0.0, 0.0)
       ..lineTo(0.0, size.height - 185)
-      ..quadraticBezierTo(
-          size.width / 2, size.height - 70, size.width, size.height - 185)
+      ..quadraticBezierTo(size.width / 2, size.height - 70, size.width, size.height - 185)
       ..lineTo(size.width, size.height)
       ..lineTo(size.width, 0)
       ..close();

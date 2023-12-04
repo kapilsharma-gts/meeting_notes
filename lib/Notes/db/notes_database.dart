@@ -24,10 +24,10 @@ class NotesDatabase {
   }
 
   Future _createDB(Database db, int version) async {
-    final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    final textType = 'TEXT NOT NULL';
-    final boolType = 'BOOLEAN NOT NULL';
-    final integerType = 'INTEGER NOT NULL';
+    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const textType = 'TEXT NOT NULL';
+    const boolType = 'BOOLEAN NOT NULL';
+    const integerType = 'INTEGER NOT NULL';
 
     await db.execute('''
 CREATE TABLE $tableNotes ( 
@@ -112,13 +112,13 @@ CREATE TABLE $tableNotes (
     final maps = await db.query(
       tableNotes,
       where: 'name LIKE ?',
-      whereArgs: ['%Keyword%'],
+      whereArgs: ['%$title%'], // Use the 'title' parameter here
     );
 
     if (maps.isNotEmpty) {
       return maps.map((json) => Note.fromJson(json)).toList();
     } else {
-      throw Exception('ID $title not found');
+      throw Exception('No notes found with title containing "$title"');
     }
   }
 

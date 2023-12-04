@@ -9,13 +9,13 @@ var initScreen;
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences preferences = await SharedPreferences.getInstance();
-  initScreen = await preferences.getInt('initScreen');
+  initScreen = preferences.getInt('initScreen');
   await preferences.setInt('initScreen', 1);
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -28,11 +28,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Meeting Notes',
         theme: ThemeData.dark(),
-        initialRoute:
-            initScreen == 0 || initScreen == null ? 'onboard' : 'note',
+        initialRoute: initScreen == 0 || initScreen == null ? 'onboard' : 'note',
         routes: {
-          'note': (context) => splashgif(),
-          'onboard': (context) => OnboardingScreen(),
+          'note': (context) => const Splashgif(),
+          'onboard': (context) => const OnboardingScreen(),
         }
         // home: const OnboardingScreen(),
         );

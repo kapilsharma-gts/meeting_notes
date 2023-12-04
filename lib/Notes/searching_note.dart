@@ -26,7 +26,7 @@ class _searchState extends State<search> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text("search"),
+          title: const Text("search"),
           centerTitle: true,
         ),
         body: Column(
@@ -35,7 +35,7 @@ class _searchState extends State<search> {
             Expanded(
               child: StaggeredGridView.countBuilder(
                 itemCount: notes.length,
-                staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
                 crossAxisCount: 4,
                 mainAxisSpacing: 4,
                 crossAxisSpacing: 4,
@@ -64,9 +64,9 @@ class _searchState extends State<search> {
       );
 
   Widget buildNotes() => StaggeredGridView.countBuilder(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         itemCount: notes.length,
-        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+        staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
         crossAxisCount: 4,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
@@ -90,13 +90,12 @@ class _searchState extends State<search> {
       final descriptionLower = Note.description.toLowerCase();
       final searchLower = query.toLowerCase();
 
-      return titleLower.contains(searchLower) ||
-          descriptionLower.contains(searchLower);
+      return titleLower.contains(searchLower) || descriptionLower.contains(searchLower);
     }).toList();
 
     setState(() {
       this.query = query;
-      this.notes = notes;
+      notes = notes;
     });
   }
 }

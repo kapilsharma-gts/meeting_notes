@@ -5,18 +5,21 @@ import 'package:cmp/Notes/edit_note_page.dart';
 import 'package:cmp/Notes/model/note.dart';
 import 'package:cmp/Notes/note_detail_page.dart';
 import 'package:cmp/Notes/widget/note_card_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
 class NotesPage extends StatefulWidget {
+  const NotesPage({super.key});
+
   @override
   _NotesPageState createState() => _NotesPageState();
 }
 
 class _NotesPageState extends State<NotesPage> {
-  TextEditingController? _textEditingController = TextEditingController();
+  final TextEditingController? _textEditingController = TextEditingController();
   List countries = [];
   List filteredCountries = [];
   bool isSearching = false;
@@ -42,95 +45,103 @@ class _NotesPageState extends State<NotesPage> {
   Future refreshNotes() async {
     setState(() => isLoading = true);
 
-    this.notes = await NotesDatabase.instance.readAllNotes();
+    notes = await NotesDatabase.instance.readAllNotes();
 
     setState(() => isLoading = false);
-  }
-
-  void _filterCountries(value) {
-    setState(() {
-      notes = notes.where((NoteFields) => NoteFields.contains(value)).toList();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return Future.value(false);
-        // final value = await showDialog<bool>(
-        //     context: context,
-        //     builder: (context) {
-        //       return AlertDialog(
-        //         title: Text("Alert"),
-        //         content: const Text("Do you Want to Exit"),
-        //         actions: [
-        //           ElevatedButton(
-        //             onPressed: () => Navigator.of(context).pop(true),
-        //             child: Text("Yes"),
-        //           ),
-        //           ElevatedButton(
-        //             onPressed: () => Navigator.of(context).pop(false),
-        //             child: Text("No"),
-        //           ),
-        //         ],
-        //       );
-        //     });
-        // if (value != null) {
-        //   return Future.value(value);
-        // } else {
-        //   return Future.value(value);
-        // }
+        // return Future.value(false);
+        final value = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Alert"),
+                content: const Text("Do you Want to Exit"),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("Yes"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("No"),
+                  ),
+                ],
+              );
+            });
+        if (value != null) {
+          return Future.value(value);
+        } else {
+          return Future.value(value);
+        }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: !isSearching
-              ? Text('Notes')
-              : TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      notes = notes
-                          .where((NoteFields) => NoteFields.contains(value))
-                          .toList();
-                    });
-                  },
-                  controller: _textEditingController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                      ),
-                      contentPadding: EdgeInsets.fromLTRB(12, 24, 12, 16),
-                      hintText: "Title and description",
-                      hintStyle: TextStyle(color: Colors.white)),
+          title: AnimatedCrossFade(
+            duration: const Duration(milliseconds: 500),
+            crossFadeState: isSearching ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            firstChild: const Text('Notes'),
+            secondChild: TextField(
+              autofocus: true,
+              onChanged: (value) {
+                setState(() {
+                  notes = notes.where((note) => note.title.contains(value)).toList();
+                });
+              },
+              controller: _textEditingController,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                icon: Icon(
+                  Icons.search,
+                  color: Colors.white,
                 ),
+                border: InputBorder.none,
+                hintText: "Title and description",
+                hintStyle: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
           actions: <Widget>[
-            isSearching
-                ? IconButton(
-                    icon: Icon(Icons.clear),
-                    onPressed: () {
-                      setState(() {
-                        this.isSearching = false;
-                        // filteredCountries = countries;
-                      });
-                    },
-                  )
-                : IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      setState(() {
-                        this.isSearching = true;
-                      });
-                    },
-                  )
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return ScaleTransition(
+                  scale: animation,
+                  child: child,
+                );
+              },
+              child: isSearching
+                  ? IconButton(
+                      key: const Key('clear_icon'),
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          isSearching = false;
+                          // filteredCountries = countries;
+                        });
+                      },
+                    )
+                  : IconButton(
+                      key: const Key('search_icon'),
+                      icon: const Icon(Icons.search),
+                      onPressed: () {
+                        setState(() {
+                          isSearching = true;
+                        });
+                      },
+                    ),
+            ),
           ],
         ),
         body: Center(
           child: isLoading
-              ? CircularProgressIndicator()
+              ? const CircularProgressIndicator()
               : notes.isEmpty
-                  ? Text(
+                  ? const Text(
                       'No Notes',
                       style: TextStyle(color: Colors.white, fontSize: 24),
                     )
@@ -138,10 +149,14 @@ class _NotesPageState extends State<NotesPage> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.white,
-          child: Icon(Icons.add),
+          child: const Icon(
+            Icons.add,
+            color: CupertinoColors.darkBackgroundGray,
+            size: 33,
+          ),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditNotePage()),
+              MaterialPageRoute(builder: (context) => const AddEditNotePage()),
             );
 
             refreshNotes();
@@ -152,9 +167,9 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget buildNotes() => StaggeredGridView.countBuilder(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         itemCount: notes.length,
-        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+        staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
         crossAxisCount: 4,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
