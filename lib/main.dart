@@ -24,16 +24,22 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Meeting Notes',
-        theme: ThemeData.dark(),
-        initialRoute: initScreen == 0 || initScreen == null ? 'onboard' : 'note',
-        routes: {
-          'note': (context) => const Splashgif(),
-          'onboard': (context) => const OnboardingScreen(),
-        }
-        // home: const OnboardingScreen(),
-        );
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'BhaBhaNotes',
+          theme: ThemeData.dark(),
+          initialRoute: initScreen == 0 || initScreen == null ? 'onboard' : 'note',
+          routes: {
+            'note': (context) => const NotesPage(),
+            'onboard': (context) => const OnboardingScreen(),
+          }
+          // home: const OnboardingScreen(),
+          ),
+    );
   }
 }

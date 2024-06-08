@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cmp/Notes/db/notes_database.dart';
 import 'package:cmp/Notes/model/note.dart';
+import 'package:cmp/Notes/widget/KeyboardOverlay.dart';
 import 'package:cmp/Notes/widget/note_form_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AddEditNotePage extends StatefulWidget {
@@ -21,9 +25,15 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
   late String title;
   late String description;
 
+  final node = FocusNode();
+
   @override
   void initState() {
     super.initState();
+
+    if (Platform.isIOS) {
+      node.addListener(() => _keyboardListener(node));
+    }
 
     isImportant = widget.note?.isImportant ?? false;
     number = widget.note?.number ?? 0;
@@ -31,25 +41,35 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     description = widget.note?.description ?? '';
   }
 
+  _keyboardListener(FocusNode node) {
+    if (node.hasFocus) {
+      KeyboardOverlay.showOverlay(context);
+    } else {
+      KeyboardOverlay.removeOverlay();
+    }
+    setState(() {});
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: null,
-        ),
-        bottomNavigationBar: buildButton(),
-        body: Form(
-          key: _formKey,
-          child: NoteFormWidget(
-            isImportant: isImportant,
-            number: number,
-            title: title,
-            description: description,
-            onChangedImportant: (isImportant) =>
-                setState(() => this.isImportant = isImportant),
-            onChangedNumber: (number) => setState(() => this.number = number),
-            onChangedTitle: (title) => setState(() => this.title = title),
-            onChangedDescription: (description) =>
-                setState(() => this.description = description),
+  Widget build(BuildContext context) => SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            actions: null,
+          ),
+          bottomNavigationBar: buildButton(),
+          body: Form(
+            key: _formKey,
+            child: NoteFormWidget(
+              focusNode: node,
+              isImportant: isImportant,
+              number: number,
+              title: title,
+              description: description,
+              onChangedImportant: (isImportant) => setState(() => this.isImportant = isImportant),
+              onChangedNumber: (number) => setState(() => this.number = number),
+              onChangedTitle: (title) => setState(() => this.title = title),
+              onChangedDescription: (description) => setState(() => this.description = description),
+            ),
           ),
         ),
       );
@@ -58,14 +78,14 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     final isFormValid = title.isNotEmpty && description.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white,
+          backgroundColor: isFormValid ? CupertinoColors.activeBlue : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateNote,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }

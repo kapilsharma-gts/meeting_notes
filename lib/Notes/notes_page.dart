@@ -4,10 +4,10 @@ import 'package:cmp/Notes/db/notes_database.dart';
 import 'package:cmp/Notes/edit_note_page.dart';
 import 'package:cmp/Notes/model/note.dart';
 import 'package:cmp/Notes/note_detail_page.dart';
+import 'package:cmp/Notes/widget/debouncer.dart';
 import 'package:cmp/Notes/widget/note_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
@@ -50,6 +50,8 @@ class _NotesPageState extends State<NotesPage> {
     setState(() => isLoading = false);
   }
 
+  final _debouncer = Debouncer(delay: const Duration(milliseconds: 500));
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -88,9 +90,17 @@ class _NotesPageState extends State<NotesPage> {
             secondChild: TextField(
               autofocus: true,
               onChanged: (value) {
-                setState(() {
-                  notes = notes.where((note) => note.title.contains(value)).toList();
-                });
+                if (value.isNotEmpty) {
+                  _debouncer.run(() {
+                    setState(() {
+                      notes = notes.where((note) => note.title.contains(value)).toList();
+                    });
+                  });
+                } else {
+                  _debouncer.run(() {
+                    refreshNotes();
+                  });
+                }
               },
               controller: _textEditingController,
               style: const TextStyle(color: Colors.white),
@@ -158,7 +168,6 @@ class _NotesPageState extends State<NotesPage> {
             await Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const AddEditNotePage()),
             );
-
             refreshNotes();
           },
         ),

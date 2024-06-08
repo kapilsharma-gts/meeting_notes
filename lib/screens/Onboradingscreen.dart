@@ -63,7 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 50),
+                              const SizedBox(height: 30),
                               Text(
                                 tab.subtitle,
                                 style: const TextStyle(
